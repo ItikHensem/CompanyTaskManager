@@ -40,3 +40,11 @@ npm run preview
 ```
 
 Data disimpan dalam `localStorage` pelayar untuk demo.
+
+## Deploy (Vercel)
+
+1. Import repo `ItikHensem/CompanyTaskManager` in Vercel
+2. Framework preset: **Vite**
+3. Build command: `npm run build`
+4. Output directory: `dist`
+5. Deploy from branch `main`
