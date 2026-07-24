@@ -12,5 +12,6 @@ export function formatDate(value?: string, withTime = false) {
 }
 
 export function StatusBadge({ value }: { value: string }) {
-  return <span className={`badge ${value}`}>{value}</span>
+  const cls = value.replace(/\s+/g, '-')
+  return <span className={`badge ${cls}`}>{value}</span>
 }
