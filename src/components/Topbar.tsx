@@ -29,7 +29,7 @@ export function Topbar({ onMenu }: TopbarProps) {
         <img className="topbar-logo" src="/Logo-Kerajaan.png" alt="Logo Kerajaan" />
         <div className="topbar-org">
           <strong>{ORG_NAME}</strong>
-          <span>{ORG_FULL}</span>
+          <span className="topbar-org-full">{ORG_FULL}</span>
         </div>
       </div>
 
@@ -39,7 +39,7 @@ export function Topbar({ onMenu }: TopbarProps) {
           {unreadCount > 0 && <span className="dot" />}
         </Link>
 
-        <Link to="/profile" className="profile-chip">
+        <Link to="/profile" className="profile-chip" title={profile.name} aria-label={profile.name}>
           <div className="avatar">{initials(profile.name)}</div>
           <div className="profile-meta">
             <strong>{profile.name}</strong>
