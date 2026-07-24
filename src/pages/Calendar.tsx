@@ -56,20 +56,32 @@ export function CalendarPage() {
           {days.map((day) => {
             const key = format(day, 'yyyy-MM-dd')
             const dayTasks = tasks.filter((t) => t.dueDate === key)
+            const visible = dayTasks.slice(0, 2)
+            const extra = dayTasks.length - visible.length
             return (
               <div
                 key={key}
                 className={`cal-day ${!isSameMonth(day, cursor) ? 'muted' : ''} ${isSameDay(day, today) ? 'today' : ''}`}
               >
                 <div className="num">{format(day, 'd')}</div>
-                {dayTasks.slice(0, 3).map((t) => (
-                  <Link key={t.id} to={`/tasks/${t.id}`} className={`cal-event ${t.priority}`} title={t.title}>
-                    {t.title}
-                  </Link>
-                ))}
-                {dayTasks.length > 3 && (
-                  <div style={{ fontSize: '0.65rem', color: 'var(--muted)', marginTop: 2 }}>
-                    +{dayTasks.length - 3} lagi
+                <div className="cal-events">
+                  {visible.map((t) => (
+                    <Link
+                      key={t.id}
+                      to={`/tasks/${t.id}`}
+                      className={`cal-event ${t.priority}`}
+                      title={t.title}
+                    >
+                      {t.title}
+                    </Link>
+                  ))}
+                  {extra > 0 && <div className="cal-more">+{extra} lagi</div>}
+                </div>
+                {dayTasks.length > 0 && (
+                  <div className="cal-dots" title={dayTasks.map((t) => t.title).join(', ')}>
+                    {dayTasks.slice(0, 4).map((t) => (
+                      <span key={t.id} className={`cal-dot ${t.priority}`} />
+                    ))}
                   </div>
                 )}
               </div>

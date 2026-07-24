@@ -655,6 +655,8 @@ table.data tr:hover td {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 0.45rem;
+  width: 100%;
+  min-width: 0;
 }
 
 .cal-head {
@@ -663,14 +665,20 @@ table.data tr:hover td {
   font-weight: 700;
   color: var(--muted);
   padding: 0.35rem;
+  min-width: 0;
 }
 
 .cal-day {
   min-height: 92px;
+  min-width: 0;
   border: 1px solid var(--line);
   border-radius: 10px;
-  padding: 0.4rem;
+  padding: 0.35rem;
   background: #fbfcfd;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
 }
 
 .cal-day.muted {
@@ -686,12 +694,26 @@ table.data tr:hover td {
   font-size: 0.78rem;
   font-weight: 700;
   color: var(--navy);
+  flex-shrink: 0;
+}
+
+.cal-events {
+  display: flex;
+  flex-direction: column;
+  gap: 0.18rem;
+  min-width: 0;
+  overflow: hidden;
+  flex: 1;
 }
 
 .cal-event {
-  margin-top: 0.25rem;
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
   font-size: 0.68rem;
-  padding: 0.18rem 0.3rem;
+  line-height: 1.25;
+  padding: 0.15rem 0.3rem;
   border-radius: 6px;
   background: var(--navy);
   color: #fff;
@@ -703,6 +725,31 @@ table.data tr:hover td {
 .cal-event.tinggi { background: var(--danger); }
 .cal-event.sederhana { background: var(--warning); }
 .cal-event.rendah { background: var(--unity); }
+
+.cal-more {
+  font-size: 0.65rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.cal-dots {
+  display: none;
+  flex-wrap: wrap;
+  gap: 3px;
+  margin-top: 2px;
+}
+
+.cal-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--navy);
+  flex-shrink: 0;
+}
+
+.cal-dot.tinggi { background: var(--danger); }
+.cal-dot.sederhana { background: var(--warning); }
+.cal-dot.rendah { background: var(--unity); }
 
 .notif-item {
   display: flex;
@@ -945,7 +992,21 @@ table.data tr:hover td {
   }
 
   .cal-day {
-    min-height: 64px;
+    min-height: 58px;
+    padding: 0.3rem;
+  }
+
+  .cal-events {
+    display: none;
+  }
+
+  .cal-dots {
+    display: flex;
+  }
+
+  .cal-head {
+    font-size: 0.68rem;
+    padding: 0.2rem;
   }
 
   .login-card {
