@@ -1,35 +1,41 @@
 import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { Plus, Search } from 'lucide-react'
 import { useApp } from '../context/AppContext'
+import { NEGERI_LIST } from '../data/seed'
 import { formatDate, StatusBadge } from '../components/ui'
 import type { TaskPriority, TaskStatus } from '../types'
 
 export function Tasks() {
-  const { tasks, getOfficer } = useApp()
+  const { visibleTasks, getOfficer, isAdmin } = useApp()
+  const [params] = useSearchParams()
   const [q, setQ] = useState('')
   const [status, setStatus] = useState<'semua' | TaskStatus>('semua')
   const [priority, setPriority] = useState<'semua' | TaskPriority>('semua')
+  const [negeri, setNegeri] = useState(params.get('negeri') || 'semua')
 
   const filtered = useMemo(() => {
-    return tasks.filter((t) => {
+    return visibleTasks.filter((t) => {
       const matchQ = !q || t.title.toLowerCase().includes(q.toLowerCase()) || t.category.toLowerCase().includes(q.toLowerCase())
       const matchS = status === 'semua' || t.status === status
       const matchP = priority === 'semua' || t.priority === priority
-      return matchQ && matchS && matchP
+      const matchN = negeri === 'semua' || t.negeri === negeri
+      return matchQ && matchS && matchP && matchN
     })
-  }, [tasks, q, status, priority])
+  }, [visibleTasks, q, status, priority, negeri])
 
   return (
     <div>
       <div className="page-header">
         <div>
-          <h1>Tugasan</h1>
-          <p>Senarai semua tugasan yang diagihkan kepada pegawai dalam dan luar.</p>
+          <h1>{isAdmin ? 'Tugasan' : 'Tugasan Saya'}</h1>
+          <p>{isAdmin ? 'Semua tugasan diagihkan.' : 'Tugasan yang diassign kepada anda.'}</p>
         </div>
-        <Link to="/tasks/create" className="btn btn-primary">
-          <Plus size={16} /> Cipta Tugasan
-        </Link>
+        {isAdmin && (
+          <Link to="/tasks/create" className="btn btn-primary">
+            <Plus size={16} /> Cipta Tugasan
+          </Link>
+        )}
       </div>
 
       <div className="panel">
@@ -58,6 +64,12 @@ export function Tasks() {
             <option value="sederhana">Sederhana</option>
             <option value="rendah">Rendah</option>
           </select>
+          <select value={negeri} onChange={(e) => setNegeri(e.target.value)}>
+            <option value="semua">Semua negeri</option>
+            {NEGERI_LIST.map((n) => (
+              <option key={n} value={n}>{n}</option>
+            ))}
+          </select>
         </div>
 
         <div className="table-wrap">
@@ -65,7 +77,7 @@ export function Tasks() {
             <thead>
               <tr>
                 <th>Tajuk</th>
-                <th>Kategori</th>
+                <th>Negeri</th>
                 <th>Ditugaskan kepada</th>
                 <th>Keutamaan</th>
                 <th>Status</th>
@@ -79,11 +91,11 @@ export function Tasks() {
                     <Link to={`/tasks/${t.id}`} style={{ color: 'var(--unity)', fontWeight: 600 }}>
                       {t.title}
                     </Link>
-                    {t.location && (
-                      <div style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>{t.location}</div>
+                    {t.recurrence === 'bulanan' && (
+                      <div style={{ fontSize: '0.72rem', color: 'var(--gold)' }}>Ulang bulanan</div>
                     )}
                   </td>
-                  <td>{t.category}</td>
+                  <td>{t.negeri || '—'}</td>
                   <td>
                     {t.assignedTo.map((id) => getOfficer(id)?.name).filter(Boolean).join(', ') || '—'}
                   </td>

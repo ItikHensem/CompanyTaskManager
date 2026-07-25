@@ -5,22 +5,22 @@ import { formatDate, StatusBadge } from '../components/ui'
 import type { SubmissionStatus } from '../types'
 
 export function Submissions() {
-  const { submissions, getTask, getOfficer, reviewSubmission } = useApp()
+  const { visibleSubmissions, getTask, getOfficer, reviewSubmission, isAdmin } = useApp()
   const [status, setStatus] = useState<'semua' | SubmissionStatus>('semua')
   const [note, setNote] = useState<Record<string, string>>({})
 
   const filtered = useMemo(() => {
-    return [...submissions]
+    return [...visibleSubmissions]
       .sort((a, b) => b.submittedAt.localeCompare(a.submittedAt))
       .filter((s) => status === 'semua' || s.status === status)
-  }, [submissions, status])
+  }, [visibleSubmissions, status])
 
   return (
     <div>
       <div className="page-header">
         <div>
           <h1>Serahan</h1>
-          <p>Semak dan luluskan serahan tugasan daripada pegawai.</p>
+          <p>{isAdmin ? 'Semak dan luluskan serahan tugasan daripada pegawai.' : 'Serahan tugasan anda.'}</p>
         </div>
       </div>
 
@@ -76,7 +76,7 @@ export function Submissions() {
                     <td>{s.files.join(', ') || '—'}</td>
                     <td><StatusBadge value={s.status} /></td>
                     <td style={{ minWidth: 220 }}>
-                      {(s.status === 'dihantar' || s.status === 'semakan semula') && (
+                      {isAdmin && (s.status === 'dihantar' || s.status === 'semakan semula') && (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                           <input
                             className="search-input"
@@ -112,6 +112,9 @@ export function Submissions() {
                             </button>
                           </div>
                         </div>
+                      )}
+                      {!isAdmin && (s.status === 'dihantar' || s.status === 'semakan semula') && (
+                        <StatusBadge value={s.status} />
                       )}
                       {s.status === 'diterima' && <span style={{ color: 'var(--success)' }}>Selesai</span>}
                       {s.status === 'ditolak' && <span style={{ color: 'var(--danger)' }}>Ditolak</span>}

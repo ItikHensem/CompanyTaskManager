@@ -1,10 +1,11 @@
-import { Bell, Menu } from 'lucide-react'
+import { Bell, Menu, Search } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
 import { ORG_FULL, ORG_NAME } from '../data/seed'
 
 interface TopbarProps {
   onMenu: () => void
+  onSearch: () => void
 }
 
 function initials(name: string) {
@@ -17,7 +18,7 @@ function initials(name: string) {
     .toUpperCase()
 }
 
-export function Topbar({ onMenu }: TopbarProps) {
+export function Topbar({ onMenu, onSearch }: TopbarProps) {
   const { profile, unreadCount } = useApp()
 
   return (
@@ -34,6 +35,9 @@ export function Topbar({ onMenu }: TopbarProps) {
       </div>
 
       <div className="topbar-right">
+        <button type="button" className="icon-btn" onClick={onSearch} aria-label="Carian global">
+          <Search size={18} />
+        </button>
         <Link to="/notifications" className="icon-btn" aria-label="Notifikasi">
           <Bell size={18} />
           {unreadCount > 0 && <span className="dot" />}
@@ -43,7 +47,7 @@ export function Topbar({ onMenu }: TopbarProps) {
           <div className="avatar">{initials(profile.name)}</div>
           <div className="profile-meta">
             <strong>{profile.name}</strong>
-            <span>{profile.email}</span>
+            <span>{profile.role} · {profile.email}</span>
           </div>
         </Link>
       </div>

@@ -2,6 +2,7 @@ import type { FormEvent } from 'react'
 import { useMemo, useState } from 'react'
 import { Plus, Search, Trash2 } from 'lucide-react'
 import { useApp } from '../context/AppContext'
+import { NEGERI_LIST } from '../data/seed'
 import { formatDate, StatusBadge } from '../components/ui'
 import type { Officer, OfficerStatus, OfficerType } from '../types'
 
@@ -14,6 +15,7 @@ const emptyForm = {
   type: 'dalam' as OfficerType,
   status: 'aktif' as OfficerStatus,
   location: '',
+  negeri: 'WP Putrajaya',
   joinedAt: new Date().toISOString().slice(0, 10),
 }
 
@@ -21,6 +23,7 @@ export function Officers() {
   const { officers, addOfficer, updateOfficer, deleteOfficer } = useApp()
   const [q, setQ] = useState('')
   const [type, setType] = useState<'semua' | OfficerType>('semua')
+  const [negeri, setNegeri] = useState('semua')
   const [showForm, setShowForm] = useState(false)
   const [form, setForm] = useState(emptyForm)
   const [editId, setEditId] = useState<string | null>(null)
@@ -29,13 +32,14 @@ export function Officers() {
     return officers.filter((o) => {
       const matchQ =
         !q ||
-        `${o.name} ${o.email} ${o.department} ${o.location}`
+        `${o.name} ${o.email} ${o.department} ${o.location} ${o.negeri}`
           .toLowerCase()
           .includes(q.toLowerCase())
       const matchType = type === 'semua' || o.type === type
-      return matchQ && matchType
+      const matchN = negeri === 'semua' || o.negeri === negeri
+      return matchQ && matchType && matchN
     })
-  }, [officers, q, type])
+  }, [officers, q, type, negeri])
 
   function openCreate() {
     setEditId(null)
@@ -54,6 +58,7 @@ export function Officers() {
       type: o.type,
       status: o.status,
       location: o.location,
+      negeri: o.negeri,
       joinedAt: o.joinedAt,
     })
     setShowForm(true)
@@ -61,11 +66,8 @@ export function Officers() {
 
   function onSubmit(e: FormEvent) {
     e.preventDefault()
-    if (editId) {
-      updateOfficer(editId, form)
-    } else {
-      addOfficer(form)
-    }
+    if (editId) updateOfficer(editId, form)
+    else addOfficer(form)
     setShowForm(false)
     setForm(emptyForm)
     setEditId(null)
@@ -76,7 +78,7 @@ export function Officers() {
       <div className="page-header">
         <div>
           <h1>Pegawai</h1>
-          <p>Urus senarai pegawai dalam (HQ) dan pegawai luar (daerah/negeri).</p>
+          <p>Urus senarai pegawai dalam/luar mengikut negeri & daerah.</p>
         </div>
         <button type="button" className="btn btn-primary" onClick={openCreate}>
           <Plus size={16} /> Tambah Pegawai
@@ -90,7 +92,7 @@ export function Officers() {
             <input
               className="search-input"
               style={{ width: '100%', paddingLeft: 36 }}
-              placeholder="Cari nama, e-mel, jabatan..."
+              placeholder="Cari nama, e-mel, jabatan, negeri..."
               value={q}
               onChange={(e) => setQ(e.target.value)}
             />
@@ -100,6 +102,12 @@ export function Officers() {
             <option value="dalam">Pegawai Dalam</option>
             <option value="luar">Pegawai Luar</option>
           </select>
+          <select value={negeri} onChange={(e) => setNegeri(e.target.value)}>
+            <option value="semua">Semua negeri</option>
+            {NEGERI_LIST.map((n) => (
+              <option key={n} value={n}>{n}</option>
+            ))}
+          </select>
         </div>
 
         <div className="table-wrap">
@@ -108,8 +116,8 @@ export function Officers() {
               <tr>
                 <th>Nama</th>
                 <th>Jenis</th>
+                <th>Negeri</th>
                 <th>Jabatan</th>
-                <th>Lokasi</th>
                 <th>Status</th>
                 <th>Sertai</th>
                 <th></th>
@@ -123,17 +131,15 @@ export function Officers() {
                     <div style={{ fontSize: '0.78rem', color: 'var(--muted)' }}>{o.email}</div>
                   </td>
                   <td><StatusBadge value={o.type} /></td>
+                  <td>{o.negeri}</td>
                   <td>
                     <div>{o.department}</div>
-                    <div style={{ fontSize: '0.78rem', color: 'var(--muted)' }}>{o.position}</div>
+                    <div style={{ fontSize: '0.78rem', color: 'var(--muted)' }}>{o.location}</div>
                   </td>
-                  <td>{o.location}</td>
                   <td><StatusBadge value={o.status} /></td>
                   <td>{formatDate(o.joinedAt)}</td>
                   <td style={{ whiteSpace: 'nowrap' }}>
-                    <button type="button" className="btn btn-ghost btn-sm" onClick={() => openEdit(o)}>
-                      Edit
-                    </button>
+                    <button type="button" className="btn btn-ghost btn-sm" onClick={() => openEdit(o)}>Edit</button>
                     <button
                       type="button"
                       className="btn btn-danger btn-sm"
@@ -147,9 +153,7 @@ export function Officers() {
                 </tr>
               ))}
               {filtered.length === 0 && (
-                <tr>
-                  <td colSpan={7} className="empty">Tiada pegawai dijumpai.</td>
-                </tr>
+                <tr><td colSpan={7} className="empty">Tiada pegawai dijumpai.</td></tr>
               )}
             </tbody>
           </table>
@@ -157,20 +161,14 @@ export function Officers() {
       </div>
 
       {showForm && (
-        <div
-          className="overlay show"
-          style={{ display: 'grid', placeItems: 'center', zIndex: 40 }}
-          onClick={() => setShowForm(false)}
-        >
+        <div className="overlay show" style={{ display: 'grid', placeItems: 'center', zIndex: 40 }} onClick={() => setShowForm(false)}>
           <form
             className="panel"
             style={{ width: 'min(640px, 94vw)', maxHeight: '90vh', overflow: 'auto' }}
             onClick={(e) => e.stopPropagation()}
             onSubmit={onSubmit}
           >
-            <div className="panel-title">
-              <h2>{editId ? 'Edit Pegawai' : 'Tambah Pegawai'}</h2>
-            </div>
+            <div className="panel-title"><h2>{editId ? 'Edit Pegawai' : 'Tambah Pegawai'}</h2></div>
             <div className="form-grid">
               <div className="field full">
                 <label>Nama penuh</label>
@@ -197,6 +195,14 @@ export function Officers() {
                 <select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value as OfficerType })}>
                   <option value="dalam">Dalam</option>
                   <option value="luar">Luar</option>
+                </select>
+              </div>
+              <div className="field">
+                <label>Negeri</label>
+                <select value={form.negeri} onChange={(e) => setForm({ ...form, negeri: e.target.value })}>
+                  {NEGERI_LIST.map((n) => (
+                    <option key={n} value={n}>{n}</option>
+                  ))}
                 </select>
               </div>
               <div className="field">

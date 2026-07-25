@@ -5,12 +5,32 @@ import type {
   AppNotification,
   UserProfile,
   AppSettings,
+  AuditLog,
 } from '../types'
 
 export const APP_NAME = 'TaskEmployee'
 export const ORG_NAME = 'JPNIN'
 export const ORG_FULL =
   'Jabatan Perpaduan Negara dan Integrasi Nasional'
+
+export const NEGERI_LIST = [
+  'Johor',
+  'Kedah',
+  'Kelantan',
+  'Melaka',
+  'Negeri Sembilan',
+  'Pahang',
+  'Perak',
+  'Perlis',
+  'Pulau Pinang',
+  'Sabah',
+  'Sarawak',
+  'Selangor',
+  'Terengganu',
+  'WP Kuala Lumpur',
+  'WP Labuan',
+  'WP Putrajaya',
+]
 
 export const currentUser: UserProfile = {
   id: 'u-001',
@@ -29,6 +49,18 @@ export const defaultSettings: AppSettings = {
   darkMode: false,
   defaultPriority: 'sederhana',
   itemsPerPage: 10,
+  reminderDays: [1, 3],
+}
+
+function tl(taskId: string, label: string, by: string, at: string, detail?: string) {
+  return {
+    id: `tl-${taskId}-${at}`,
+    taskId,
+    label,
+    detail,
+    at,
+    by,
+  }
 }
 
 export const seedOfficers: Officer[] = [
@@ -42,6 +74,7 @@ export const seedOfficers: Officer[] = [
     type: 'dalam',
     status: 'aktif',
     location: 'Putrajaya',
+    negeri: 'WP Putrajaya',
     joinedAt: '2020-03-15',
   },
   {
@@ -54,6 +87,7 @@ export const seedOfficers: Officer[] = [
     type: 'dalam',
     status: 'aktif',
     location: 'Putrajaya',
+    negeri: 'WP Putrajaya',
     joinedAt: '2019-07-01',
   },
   {
@@ -66,6 +100,7 @@ export const seedOfficers: Officer[] = [
     type: 'dalam',
     status: 'aktif',
     location: 'Kuala Lumpur',
+    negeri: 'WP Kuala Lumpur',
     joinedAt: '2021-11-20',
   },
   {
@@ -78,6 +113,7 @@ export const seedOfficers: Officer[] = [
     type: 'luar',
     status: 'aktif',
     location: 'Petaling Jaya, Selangor',
+    negeri: 'Selangor',
     joinedAt: '2018-05-10',
   },
   {
@@ -90,6 +126,7 @@ export const seedOfficers: Officer[] = [
     type: 'luar',
     status: 'aktif',
     location: 'Johor Bahru, Johor',
+    negeri: 'Johor',
     joinedAt: '2017-09-22',
   },
   {
@@ -102,6 +139,7 @@ export const seedOfficers: Officer[] = [
     type: 'luar',
     status: 'aktif',
     location: 'Kota Kinabalu, Sabah',
+    negeri: 'Sabah',
     joinedAt: '2022-01-08',
   },
   {
@@ -114,6 +152,7 @@ export const seedOfficers: Officer[] = [
     type: 'dalam',
     status: 'tidak aktif',
     location: 'Putrajaya',
+    negeri: 'WP Putrajaya',
     joinedAt: '2016-04-12',
   },
   {
@@ -126,6 +165,7 @@ export const seedOfficers: Officer[] = [
     type: 'luar',
     status: 'aktif',
     location: 'Alor Setar, Kedah',
+    negeri: 'Kedah',
     joinedAt: '2020-08-30',
   },
 ]
@@ -144,6 +184,23 @@ export const seedTasks: Task[] = [
     createdAt: '2026-07-10',
     category: 'Program',
     location: 'Selangor & Johor',
+    negeri: 'Selangor',
+    recurrence: 'tiada',
+    comments: [
+      {
+        id: 'c-001',
+        taskId: 't-001',
+        authorId: 'u-001',
+        authorName: 'Ahmad Faizal bin Hassan',
+        message: 'Sila pastikan kehadiran pemimpin komuniti direkod dengan lengkap.',
+        createdAt: '2026-07-11T09:00:00',
+      },
+    ],
+    timeline: [
+      tl('t-001', 'Tugasan dicipta', 'Ahmad Faizal bin Hassan', '2026-07-10T08:00:00'),
+      tl('t-001', 'Status: sedang berjalan', 'Nurul Huda binti Abdullah', '2026-07-12T10:00:00'),
+    ],
+    checkIns: [],
   },
   {
     id: 't-002',
@@ -157,6 +214,14 @@ export const seedTasks: Task[] = [
     dueDate: '2026-07-25',
     createdAt: '2026-07-01',
     category: 'Laporan',
+    negeri: 'Selangor',
+    recurrence: 'bulanan',
+    comments: [],
+    timeline: [
+      tl('t-002', 'Tugasan dicipta', 'Ahmad Faizal bin Hassan', '2026-07-01T08:00:00'),
+      tl('t-002', 'Serahan dihantar', 'Nurul Huda binti Abdullah', '2026-07-22T09:30:00'),
+    ],
+    checkIns: [],
   },
   {
     id: 't-003',
@@ -170,6 +235,11 @@ export const seedTasks: Task[] = [
     dueDate: '2026-08-05',
     createdAt: '2026-07-20',
     category: 'Pentadbiran',
+    negeri: 'WP Putrajaya',
+    recurrence: 'tiada',
+    comments: [],
+    timeline: [tl('t-003', 'Tugasan dicipta', 'Ahmad Faizal bin Hassan', '2026-07-20T08:00:00')],
+    checkIns: [],
   },
   {
     id: 't-004',
@@ -184,6 +254,22 @@ export const seedTasks: Task[] = [
     createdAt: '2026-07-12',
     category: 'Lawatan',
     location: 'Kota Kinabalu',
+    negeri: 'Sabah',
+    recurrence: 'tiada',
+    comments: [],
+    timeline: [tl('t-004', 'Tugasan dicipta', 'Ahmad Faizal bin Hassan', '2026-07-12T08:00:00')],
+    checkIns: [
+      {
+        id: 'ci-001',
+        taskId: 't-004',
+        officerId: 'o-006',
+        officerName: 'Aishah binti Rahman',
+        note: 'Tiba di Sekolah Kebangsaan Likas',
+        at: '2026-07-20T09:15:00',
+        lat: 5.9965,
+        lng: 116.1004,
+      },
+    ],
   },
   {
     id: 't-005',
@@ -197,6 +283,14 @@ export const seedTasks: Task[] = [
     dueDate: '2026-07-15',
     createdAt: '2026-07-01',
     category: 'Komunikasi',
+    negeri: 'WP Kuala Lumpur',
+    recurrence: 'tiada',
+    comments: [],
+    timeline: [
+      tl('t-005', 'Tugasan dicipta', 'Ahmad Faizal bin Hassan', '2026-07-01T08:00:00'),
+      tl('t-005', 'Status: selesai', 'Lim Wei Ming', '2026-07-15T09:00:00'),
+    ],
+    checkIns: [],
   },
   {
     id: 't-006',
@@ -210,6 +304,11 @@ export const seedTasks: Task[] = [
     dueDate: '2026-07-18',
     createdAt: '2026-06-20',
     category: 'Audit',
+    negeri: 'WP Putrajaya',
+    recurrence: 'tiada',
+    comments: [],
+    timeline: [tl('t-006', 'Tugasan dicipta', 'Ahmad Faizal bin Hassan', '2026-06-20T08:00:00')],
+    checkIns: [],
   },
   {
     id: 't-007',
@@ -224,6 +323,11 @@ export const seedTasks: Task[] = [
     createdAt: '2026-07-22',
     category: 'Program',
     location: 'Putrajaya',
+    negeri: 'WP Putrajaya',
+    recurrence: 'tiada',
+    comments: [],
+    timeline: [tl('t-007', 'Tugasan dicipta', 'Ahmad Faizal bin Hassan', '2026-07-22T08:00:00')],
+    checkIns: [],
   },
 ]
 
@@ -235,6 +339,7 @@ export const seedSubmissions: Submission[] = [
     content:
       'Laporan bulanan Jun 2026 untuk Daerah Petaling telah dilampirkan. Jumlah aktiviti: 8 program.',
     files: ['Laporan_Jun_Petaling.pdf'],
+    attachments: [],
     status: 'dihantar',
     submittedAt: '2026-07-22T09:30:00',
   },
@@ -245,6 +350,7 @@ export const seedSubmissions: Submission[] = [
     content:
       'Laporan Daerah Johor Bahru dilampirkan. Terdapat 2 aktiviti yang ditangguhkan kerana cuaca.',
     files: ['Laporan_Jun_JB.pdf', 'Lampiran_Foto.zip'],
+    attachments: [],
     status: 'semakan semula',
     submittedAt: '2026-07-21T14:15:00',
     reviewedAt: '2026-07-22T10:00:00',
@@ -257,6 +363,7 @@ export const seedSubmissions: Submission[] = [
     content:
       'Lima kandungan media sosial siap. Jadual siaran dilampirkan.',
     files: ['Kandungan_Ogos.docx', 'Jadual_Siaran.xlsx'],
+    attachments: [],
     status: 'diterima',
     submittedAt: '2026-07-14T16:45:00',
     reviewedAt: '2026-07-15T09:00:00',
@@ -269,6 +376,7 @@ export const seedSubmissions: Submission[] = [
     content:
       'Ringkasan dialog pertama di Petaling Jaya. Kehadiran 42 peserta.',
     files: ['Ringkasan_Dialog_PJ.pdf'],
+    attachments: [],
     status: 'dihantar',
     submittedAt: '2026-07-23T11:20:00',
   },
@@ -318,5 +426,24 @@ export const seedNotifications: AppNotification[] = [
     type: 'sistem',
     read: true,
     createdAt: '2026-07-10T12:00:00',
+  },
+]
+
+export const seedAuditLogs: AuditLog[] = [
+  {
+    id: 'a-001',
+    action: 'LOGIN',
+    detail: 'Admin log masuk ke sistem',
+    actorId: 'u-001',
+    actorName: 'Ahmad Faizal bin Hassan',
+    createdAt: '2026-07-24T08:00:00',
+  },
+  {
+    id: 'a-002',
+    action: 'CIPTA_TUGASAN',
+    detail: 'Mencipta tugasan: Bengkel Integrasi Masyarakat Bandar',
+    actorId: 'u-001',
+    actorName: 'Ahmad Faizal bin Hassan',
+    createdAt: '2026-07-22T08:05:00',
   },
 ]

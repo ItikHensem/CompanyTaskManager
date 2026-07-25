@@ -1,4 +1,5 @@
-:root {
+:root,
+html[data-theme='light'] {
   --navy: #0c2744;
   --navy-deep: #081a2e;
   --unity: #0e6b5c;
@@ -20,6 +21,29 @@
   --topbar-h: 68px;
   --font-display: 'Fraunces', Georgia, serif;
   --font-body: 'IBM Plex Sans', 'Segoe UI', sans-serif;
+  --topbar-bg: rgba(255, 255, 255, 0.82);
+  --input-bg: #fff;
+}
+
+html[data-theme='dark'] {
+  --navy: #d7e6f5;
+  --navy-deep: #07111d;
+  --unity: #3ecfb5;
+  --unity-soft: #12352f;
+  --gold: #e0b45a;
+  --gold-soft: #3a2f18;
+  --ink: #e8eef5;
+  --muted: #9aabbc;
+  --line: #2a3a4d;
+  --surface: #121c28;
+  --bg: #0b121a;
+  --danger: #ff7b72;
+  --warning: #f0b429;
+  --success: #3dd68c;
+  --info: #6cb6ff;
+  --shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+  --topbar-bg: rgba(18, 28, 40, 0.9);
+  --input-bg: #0f1722;
 }
 
 *,
@@ -185,7 +209,7 @@ h3,
   justify-content: space-between;
   gap: 0.75rem;
   padding: 0 1.4rem;
-  background: rgba(255, 255, 255, 0.82);
+  background: var(--topbar-bg);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid rgba(207, 216, 227, 0.9);
   animation: fadeSlide 0.45s ease both;
@@ -602,7 +626,7 @@ table.data tr:hover td {
   border: 1px solid var(--line);
   border-radius: 10px;
   padding: 0.65rem 0.8rem;
-  background: #fff;
+  background: var(--input-bg);
   color: var(--ink);
   outline: none;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
@@ -1097,4 +1121,166 @@ table.data tr:hover td {
   .stat .value {
     font-size: 1.55rem;
   }
+}
+
+.search-overlay {
+  display: grid !important;
+  place-items: start center;
+  padding: 12vh 1rem 1rem;
+  z-index: 50;
+}
+
+.search-panel {
+  width: min(640px, 100%);
+  max-height: 70vh;
+  overflow: auto;
+}
+
+.search-section {
+  margin: 0.85rem 0 0.35rem;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+.search-hit {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.65rem 0.55rem;
+  border-radius: 10px;
+  border: 1px solid transparent;
+}
+
+.search-hit:hover {
+  background: var(--unity-soft);
+  border-color: var(--line);
+}
+
+.search-hit strong {
+  color: var(--navy);
+}
+
+.search-hit span {
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.comment-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  max-height: 280px;
+  overflow: auto;
+}
+
+.comment-item {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.65rem 0.75rem;
+  background: var(--input-bg);
+}
+
+.comment-item strong {
+  display: block;
+  color: var(--navy);
+  font-size: 0.88rem;
+}
+
+.comment-item time {
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+.comment-item p {
+  margin: 0.35rem 0 0;
+  font-size: 0.9rem;
+}
+
+.timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  max-height: 320px;
+  overflow: auto;
+}
+
+.timeline li {
+  position: relative;
+  padding-left: 1rem;
+  border-left: 2px solid var(--unity);
+}
+
+.timeline .muted,
+.muted {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.map-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.85rem;
+}
+
+.map-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 0.95rem;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.map-card-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  color: var(--navy);
+}
+
+.map-card-head span {
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.map-bar {
+  height: 8px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--unity), var(--gold));
+}
+
+.map-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+html[data-theme='dark'] body {
+  background:
+    radial-gradient(1000px 500px at 10% -10%, rgba(62, 207, 181, 0.12), transparent 55%),
+    radial-gradient(800px 400px at 100% 0%, rgba(224, 180, 90, 0.1), transparent 50%),
+    linear-gradient(180deg, #0b121a 0%, #0e1621 100%);
+}
+
+html[data-theme='dark'] .panel,
+html[data-theme='dark'] .stat,
+html[data-theme='dark'] .cal-day,
+html[data-theme='dark'] .cal-task-item,
+html[data-theme='dark'] .login-card {
+  background: var(--surface);
+}
+
+html[data-theme='dark'] .icon-btn,
+html[data-theme='dark'] .profile-chip,
+html[data-theme='dark'] .btn-ghost {
+  background: var(--surface);
+  color: var(--ink);
 }

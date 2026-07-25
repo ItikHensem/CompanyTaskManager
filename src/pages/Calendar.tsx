@@ -18,7 +18,7 @@ import { useApp } from '../context/AppContext'
 import { formatDate, StatusBadge } from '../components/ui'
 
 export function CalendarPage() {
-  const { tasks, getOfficer } = useApp()
+  const { visibleTasks: tasks, getOfficer } = useApp()
   const [cursor, setCursor] = useState(() => startOfMonth(new Date()))
   const [selected, setSelected] = useState(() => new Date())
 

@@ -19,7 +19,18 @@ import { useApp } from '../context/AppContext'
 import { formatDate, StatusBadge } from '../components/ui'
 
 export function Dashboard() {
-  const { officers, tasks, submissions, notifications, getOfficer } = useApp()
+  const {
+    officers,
+    visibleTasks,
+    visibleSubmissions,
+    notifications,
+    getOfficer,
+    isAdmin,
+    profile,
+  } = useApp()
+
+  const tasks = visibleTasks
+  const submissions = visibleSubmissions
 
   const activeOfficers = officers.filter((o) => o.status === 'aktif').length
   const openTasks = tasks.filter((t) => t.status !== 'selesai').length
@@ -46,29 +57,37 @@ export function Dashboard() {
     <div>
       <div className="page-header">
         <div>
-          <h1>Dashboard</h1>
-          <p>Ringkasan agihan tugasan pegawai dalam dan luar JPNIN.</p>
+          <h1>{isAdmin ? 'Dashboard' : 'Dashboard Saya'}</h1>
+          <p>
+            {isAdmin
+              ? 'Ringkasan agihan tugasan pegawai dalam dan luar JPNIN.'
+              : `Salam ${profile.name.split(' ')[0]} — tugasan yang diassign kepada anda.`}
+          </p>
         </div>
-        <Link to="/tasks/create" className="btn btn-primary">
-          <Plus size={16} /> Cipta Tugasan
-        </Link>
+        {isAdmin && (
+          <Link to="/tasks/create" className="btn btn-primary">
+            <Plus size={16} /> Cipta Tugasan
+          </Link>
+        )}
       </div>
 
       <div className="grid grid-4" style={{ marginBottom: '1rem' }}>
-        <div className="stat">
-          <div className="label"><Users size={14} style={{ verticalAlign: -2 }} /> Pegawai Aktif</div>
-          <div className="value">{activeOfficers}</div>
-          <div className="hint">{officers.filter((o) => o.type === 'luar').length} luar · {officers.filter((o) => o.type === 'dalam').length} dalam</div>
-        </div>
+        {isAdmin && (
+          <div className="stat">
+            <div className="label"><Users size={14} style={{ verticalAlign: -2 }} /> Pegawai Aktif</div>
+            <div className="value">{activeOfficers}</div>
+            <div className="hint">{officers.filter((o) => o.type === 'luar').length} luar · {officers.filter((o) => o.type === 'dalam').length} dalam</div>
+          </div>
+        )}
         <div className="stat">
           <div className="label"><ListTodo size={14} style={{ verticalAlign: -2 }} /> Tugasan Dibuka</div>
           <div className="value">{openTasks}</div>
           <div className="hint">daripada {tasks.length} jumlah tugasan</div>
         </div>
         <div className="stat">
-          <div className="label"><FileCheck2 size={14} style={{ verticalAlign: -2 }} /> Serahan Menunggu</div>
+          <div className="label"><FileCheck2 size={14} style={{ verticalAlign: -2 }} /> Serahan</div>
           <div className="value">{pendingSubs}</div>
-          <div className="hint">perlu semakan</div>
+          <div className="hint">{isAdmin ? 'perlu semakan' : 'menunggu / semakan'}</div>
         </div>
         <div className="stat">
           <div className="label"><AlertTriangle size={14} style={{ verticalAlign: -2 }} /> Melebihi Tarikh</div>
@@ -119,7 +138,7 @@ export function Dashboard() {
 
       <div className="panel" style={{ marginTop: '1rem' }}>
         <div className="panel-title">
-          <h2>Tugasan Terkini</h2>
+          <h2>{isAdmin ? 'Tugasan Terkini' : 'Tugasan Saya'}</h2>
           <Link to="/tasks" className="btn btn-ghost btn-sm">Semua tugasan</Link>
         </div>
         <div className="table-wrap">
@@ -152,6 +171,9 @@ export function Dashboard() {
                   <td>{formatDate(t.dueDate)}</td>
                 </tr>
               ))}
+              {recentTasks.length === 0 && (
+                <tr><td colSpan={5} className="empty">Tiada tugasan.</td></tr>
+              )}
             </tbody>
           </table>
         </div>

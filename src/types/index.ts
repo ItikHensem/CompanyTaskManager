@@ -3,6 +3,17 @@ export type OfficerStatus = 'aktif' | 'tidak aktif'
 export type TaskPriority = 'tinggi' | 'sederhana' | 'rendah'
 export type TaskStatus = 'baru' | 'sedang berjalan' | 'menunggu semakan' | 'selesai' | 'tertunda'
 export type SubmissionStatus = 'dihantar' | 'diterima' | 'ditolak' | 'semakan semula'
+export type UserRole = 'admin' | 'pegawai'
+export type Recurrence = 'tiada' | 'bulanan'
+
+export interface FileAttachment {
+  id: string
+  name: string
+  type: string
+  size: number
+  dataUrl: string
+  uploadedAt: string
+}
 
 export interface Officer {
   id: string
@@ -15,7 +26,46 @@ export interface Officer {
   status: OfficerStatus
   avatar?: string
   location: string
+  negeri: string
   joinedAt: string
+}
+
+export interface TaskComment {
+  id: string
+  taskId: string
+  authorId: string
+  authorName: string
+  message: string
+  createdAt: string
+}
+
+export interface TimelineEvent {
+  id: string
+  taskId: string
+  label: string
+  detail?: string
+  at: string
+  by: string
+}
+
+export interface CheckIn {
+  id: string
+  taskId: string
+  officerId: string
+  officerName: string
+  note?: string
+  at: string
+  lat?: number
+  lng?: number
+}
+
+export interface AuditLog {
+  id: string
+  action: string
+  detail: string
+  actorId: string
+  actorName: string
+  createdAt: string
 }
 
 export interface Task {
@@ -30,7 +80,12 @@ export interface Task {
   createdAt: string
   category: string
   location?: string
-  attachments?: string[]
+  negeri?: string
+  recurrence: Recurrence
+  attachments?: FileAttachment[]
+  comments: TaskComment[]
+  timeline: TimelineEvent[]
+  checkIns: CheckIn[]
 }
 
 export interface Submission {
@@ -39,6 +94,7 @@ export interface Submission {
   officerId: string
   content: string
   files: string[]
+  attachments: FileAttachment[]
   status: SubmissionStatus
   submittedAt: string
   reviewedAt?: string
@@ -63,7 +119,8 @@ export interface UserProfile {
   position: string
   department: string
   avatar?: string
-  role: 'admin' | 'pengurus' | 'pegawai'
+  role: UserRole
+  officerId?: string
 }
 
 export interface AppSettings {
@@ -73,4 +130,5 @@ export interface AppSettings {
   darkMode: boolean
   defaultPriority: TaskPriority
   itemsPerPage: number
+  reminderDays: number[]
 }

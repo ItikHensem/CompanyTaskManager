@@ -2,7 +2,8 @@ import type { FormEvent } from 'react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
-import type { TaskPriority } from '../types'
+import { NEGERI_LIST } from '../data/seed'
+import type { Recurrence, TaskPriority } from '../types'
 
 export function CreateTask() {
   const { officers, addTask, profile, settings } = useApp()
@@ -13,12 +14,18 @@ export function CreateTask() {
   const [priority, setPriority] = useState<TaskPriority>(settings.defaultPriority)
   const [dueDate, setDueDate] = useState('')
   const [location, setLocation] = useState('')
+  const [negeri, setNegeri] = useState('WP Putrajaya')
+  const [recurrence, setRecurrence] = useState<Recurrence>('tiada')
   const [assignedTo, setAssignedTo] = useState<string[]>([])
   const [filterType, setFilterType] = useState<'semua' | 'dalam' | 'luar'>('semua')
+  const [filterNegeri, setFilterNegeri] = useState('semua')
   const [done, setDone] = useState(false)
 
   const visibleOfficers = officers.filter(
-    (o) => o.status === 'aktif' && (filterType === 'semua' || o.type === filterType),
+    (o) =>
+      o.status === 'aktif' &&
+      (filterType === 'semua' || o.type === filterType) &&
+      (filterNegeri === 'semua' || o.negeri === filterNegeri),
   )
 
   function toggleOfficer(id: string) {
@@ -40,6 +47,8 @@ export function CreateTask() {
       priority,
       dueDate,
       location: location || undefined,
+      negeri,
+      recurrence,
       assignedTo,
       assignedBy: profile.id,
     })
@@ -62,11 +71,11 @@ export function CreateTask() {
         <div className="form-grid">
           <div className="field full">
             <label>Tajuk tugasan</label>
-            <input required value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Contoh: Program Dialog Perpaduan" />
+            <input required value={title} onChange={(e) => setTitle(e.target.value)} />
           </div>
           <div className="field full">
             <label>Penerangan</label>
-            <textarea required value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Terangkan skop, jangkaan hasil dan arahan khas..." />
+            <textarea required value={description} onChange={(e) => setDescription(e.target.value)} />
           </div>
           <div className="field">
             <label>Kategori</label>
@@ -93,12 +102,27 @@ export function CreateTask() {
             <input required type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
           </div>
           <div className="field">
+            <label>Negeri</label>
+            <select value={negeri} onChange={(e) => setNegeri(e.target.value)}>
+              {NEGERI_LIST.map((n) => (
+                <option key={n} value={n}>{n}</option>
+              ))}
+            </select>
+          </div>
+          <div className="field">
             <label>Lokasi (pilihan)</label>
-            <input value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Contoh: Putrajaya" />
+            <input value={location} onChange={(e) => setLocation(e.target.value)} />
+          </div>
+          <div className="field">
+            <label>Ulang tugasan</label>
+            <select value={recurrence} onChange={(e) => setRecurrence(e.target.value as Recurrence)}>
+              <option value="tiada">Tiada</option>
+              <option value="bulanan">Bulanan (auto jana)</option>
+            </select>
           </div>
           <div className="field full">
             <label>Tugaskan kepada</label>
-            <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
+            <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem', flexWrap: 'wrap' }}>
               {(['semua', 'dalam', 'luar'] as const).map((t) => (
                 <button
                   key={t}
@@ -106,9 +130,15 @@ export function CreateTask() {
                   className={`btn btn-sm ${filterType === t ? 'btn-secondary' : 'btn-ghost'}`}
                   onClick={() => setFilterType(t)}
                 >
-                  {t === 'semua' ? 'Semua' : t === 'dalam' ? 'Pegawai Dalam' : 'Pegawai Luar'}
+                  {t === 'semua' ? 'Semua' : t === 'dalam' ? 'Dalam' : 'Luar'}
                 </button>
               ))}
+              <select value={filterNegeri} onChange={(e) => setFilterNegeri(e.target.value)}>
+                <option value="semua">Semua negeri</option>
+                {NEGERI_LIST.map((n) => (
+                  <option key={n} value={n}>{n}</option>
+                ))}
+              </select>
             </div>
             <div className="checkbox-list">
               {visibleOfficers.map((o) => (
@@ -120,7 +150,7 @@ export function CreateTask() {
                   />
                   <span>
                     {o.name}
-                    <span style={{ color: 'var(--muted)', fontSize: '0.78rem' }}> ({o.type})</span>
+                    <span style={{ color: 'var(--muted)', fontSize: '0.78rem' }}> ({o.type} · {o.negeri})</span>
                   </span>
                 </label>
               ))}

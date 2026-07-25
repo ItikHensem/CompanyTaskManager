@@ -4,14 +4,15 @@ import { useApp } from '../context/AppContext'
 import type { TaskPriority } from '../types'
 
 export function Settings() {
-  const { settings, updateSettings } = useApp()
+  const { settings, updateSettings, runDueReminders } = useApp()
   const [form, setForm] = useState(settings)
   const [msg, setMsg] = useState('')
 
   function onSubmit(e: FormEvent) {
     e.preventDefault()
     updateSettings(form)
-    setMsg('Tetapan berjaya disimpan.')
+    const n = runDueReminders()
+    setMsg(`Tetapan disimpan.${n ? ` ${n} peringatan baharu dijana.` : ''}`)
   }
 
   return (
@@ -19,7 +20,7 @@ export function Settings() {
       <div className="page-header">
         <div>
           <h1>Tetapan</h1>
-          <p>Konfigurasi aplikasi TaskEmployee.</p>
+          <p>Konfigurasi aplikasi TaskEmployee termasuk dark mode & peringatan.</p>
         </div>
       </div>
 
@@ -37,6 +38,16 @@ export function Settings() {
             </select>
           </div>
           <div className="field">
+            <label>Mod gelap</label>
+            <select
+              value={form.darkMode ? 'ya' : 'tidak'}
+              onChange={(e) => setForm({ ...form, darkMode: e.target.value === 'ya' })}
+            >
+              <option value="tidak">Tidak</option>
+              <option value="ya">Ya</option>
+            </select>
+          </div>
+          <div className="field">
             <label>Keutamaan lalai</label>
             <select
               value={form.defaultPriority}
@@ -48,15 +59,19 @@ export function Settings() {
             </select>
           </div>
           <div className="field">
-            <label>Item setiap halaman</label>
+            <label>Peringatan (hari sebelum due)</label>
             <select
-              value={form.itemsPerPage}
-              onChange={(e) => setForm({ ...form, itemsPerPage: Number(e.target.value) })}
+              value={(form.reminderDays || [1, 3]).join(',')}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  reminderDays: e.target.value.split(',').map((x) => Number(x)),
+                })
+              }
             >
-              <option value={5}>5</option>
-              <option value={10}>10</option>
-              <option value={20}>20</option>
-              <option value={50}>50</option>
+              <option value="1,3">1 & 3 hari</option>
+              <option value="1">1 hari sahaja</option>
+              <option value="1,3,7">1, 3 & 7 hari</option>
             </select>
           </div>
           <div className="field">
